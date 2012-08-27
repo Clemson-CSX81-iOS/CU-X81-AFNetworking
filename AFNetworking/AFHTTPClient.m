@@ -235,6 +235,7 @@ static NSString * AFPropertyListStringFromParameters(NSDictionary *parameters) {
 @synthesize baseURL = _baseURL;
 @synthesize stringEncoding = _stringEncoding;
 @synthesize parameterEncoding = _parameterEncoding;
+@synthesize deleteParamsEncodedInURL = _deleteParamsEncodedInURL;
 @synthesize registeredHTTPOperationClassNames = _registeredHTTPOperationClassNames;
 @synthesize defaultHeaders = _defaultHeaders;
 @synthesize operationQueue = _operationQueue;
@@ -263,6 +264,7 @@ static NSString * AFPropertyListStringFromParameters(NSDictionary *parameters) {
     
     self.stringEncoding = NSUTF8StringEncoding;
     self.parameterEncoding = AFFormURLParameterEncoding;
+    self.deleteParamsEncodedInURL = YES;
 	
     self.registeredHTTPOperationClassNames = [NSMutableArray array];
     
@@ -462,7 +464,7 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
     }
 	
     if (parameters) {        
-        if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"]) {
+        if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || (self.deleteParamsEncodedInURL && [method isEqualToString:@"DELETE"])) {
             url = [NSURL URLWithString:[[url absoluteString] stringByAppendingFormat:[path rangeOfString:@"?"].location == NSNotFound ? @"?%@" : @"&%@", AFQueryStringFromParametersWithEncoding(parameters, self.stringEncoding)]];
             [request setURL:url];
         } else {
